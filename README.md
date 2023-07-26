@@ -35,7 +35,7 @@ To create a virtual environment variable specify variable values according to yo
 >\>set database=\<you database name>
 
 ###### 3 OPTION ######
-If multiple uses of the script are planned, then you should add variables from [2 OPTION](/menu_app#2-option) to the file "Activate.bat" and to "Deactivate.bat" file should be specified without the values of variables.  
+If multiple uses of the script are planned, then you should add variables from [2 OPTION](/2-option) to the file "Activate.bat" and to "Deactivate.bat" file should be specified without the values of variables.  
 *For windows:* 
   
 >\>set sql_host=  
