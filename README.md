@@ -1,9 +1,9 @@
 ==================================== APP DESCRIPTION ====================================
 
-A simple application for food establishments that is based on PostgreSQL and FastAPI.
-Works with menu units, submenus and dishes that are entered into the database. They will allow you to add elements, delete, update, and provide information about them using the appropriate rest api requests.
+A simple application for food establishments that is based on PostgreSQL and FastAPI.  
+Works with menu units, submenus and dishes that are entered into the database. They will allow you to add elements, delete, update, and provide information about them using the appropriate rest api requests.  
 
-ASGI-server uviconr is used to test the application.
+ASGI-server uviconr is used to test the application.  
 
 ======================================== RUN APP ========================================
 
@@ -26,8 +26,8 @@ Define database parameters:
 You can set the parameters directly in the "/menu_app/conf.py" file (not recommended for security reasons)
 ------------------------------------
 2 OPTION
-To create a virtual environment variable specify variable values according to your database settings.
-    for windows:
+To create a virtual environment variable specify variable values according to your database settings.  
+    for windows:  
         >set sql_host=<host-ip>
         >set sql_port=<host-port>
         >set sql_user=<database user>
