@@ -43,5 +43,3 @@ def set_dish_2(request):
     request.cls.dish_id = str(uuid4())
     request.cls.dish_title = 'My dish 2'
     request.cls.dish_description = 'My dish description 2'
-
-
