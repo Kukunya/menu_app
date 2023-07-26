@@ -26,12 +26,3 @@ class SubmenuObj(BaseObj):
 
 class DishObj(BaseObj):
     price: Decimal
-
-
-class RespErrNotFound(BaseModel):
-    detail: str
-
-
-class RespConfirmDel(BaseModel):
-    status: bool
-    message: str
