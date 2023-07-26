@@ -31,7 +31,7 @@ To create a virtual environment variable specify variable values according to yo
         >set sql_host=<host-ip>
         >set sql_port=<host-port>
         >set sql_user=<database user>
-        >set sql_password=<database password>
+        >set sql_pass=<database password>
         >set database=<database name>
 ------------------------------------
 3 OPTION
