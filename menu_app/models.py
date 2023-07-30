@@ -1,6 +1,7 @@
-from sqlalchemy import create_engine, Column, VARCHAR, DECIMAL, ForeignKey
+from sqlalchemy import Column, VARCHAR, DECIMAL, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import sessionmaker, declarative_base
+from sqlalchemy.orm import declarative_base
+
 
 Base = declarative_base()
 
@@ -28,9 +29,3 @@ class Dishes(Base):
     price = Column(DECIMAL)
     main_menu_id = Column(UUID(as_uuid=True), ForeignKey('menus.id', ondelete='CASCADE'))
     sub_menu_id = Column(UUID(as_uuid=True), ForeignKey('submenus.id', ondelete='CASCADE'))
-
-
-engine = create_engine(f'postgresql+psycopg2://postgres:admin@localhost:5432/menu_app')
-session = sessionmaker(bind=engine)
-Base.metadata.create_all(engine)
-engine.connect()

@@ -1,11 +1,11 @@
 from fastapi import FastAPI, HTTPException, status
 from fastapi.responses import JSONResponse
 from typing import List
-from menu_app.engine import connect
+from database.engine import connect
 from menu_app.models import Menus, Submenus, Dishes
 from uuid import UUID
-from menu_app.engine import create_menu, create_submenu, create_dish,\
-    get_count_dish, get_count_submenu
+from database.engine import create_menu, create_submenu, create_dish,\
+    get_count_dishes, get_count_submenus, get_count_sbmenu_n_dsh
 from menu_app.schemas import MenuObj, SubmenuObj, DishObj
 
 
@@ -14,7 +14,7 @@ app = FastAPI()
 
 # DEFINITION GET RESPONSE HANDLE ===============================================
 
-# get response
+
 @app.get('/api/v1/menus/',
          response_model=List[MenuObj])
 def get_menus():
@@ -22,8 +22,8 @@ def get_menus():
     return [MenuObj(id=menu.id,
                     title=menu.title,
                     description=menu.description,
-                    submenus_count=get_count_submenu(menu.id),
-                    dishes_count=get_count_dish(menu.id)) for menu in menus]
+                    submenus_count=get_count_submenus(menu.id),
+                    dishes_count=get_count_dishes(menu.id)) for menu in menus]
 
 
 @app.get('/api/v1/menus/{main_menu_id}/',
@@ -31,11 +31,12 @@ def get_menus():
 def get_menus_item(main_menu_id: UUID):
     menu = connect.query(Menus).filter(Menus.id == main_menu_id).first()
     if menu:
+        count_submenu, count_dish = get_count_sbmenu_n_dsh(main_menu_id)
         return MenuObj(id=menu.id,
                        title=menu.title,
                        description=menu.description,
-                       submenus_count=get_count_submenu(menu.id),
-                       dishes_count=get_count_dish(menu.id))
+                       submenus_count=count_submenu,
+                       dishes_count=count_dish)
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
@@ -50,7 +51,7 @@ def get_submenus(main_menu_id: UUID):
     return [SubmenuObj(id=sub_menu.id,
                        title=sub_menu.title,
                        description=sub_menu.description,
-                       dishes_count=get_count_dish(sub_menu.id)) for sub_menu in sub_menus]
+                       dishes_count=get_count_dishes(sub_menu.id)) for sub_menu in sub_menus]
 
 
 @app.get('/api/v1/menus/{main_menu_id}/submenus/{submenu_id}/',
@@ -63,7 +64,7 @@ def get_submenu_item(main_menu_id: UUID,
         return SubmenuObj(id=sub_menu.id,
                           title=sub_menu.title,
                           description=sub_menu.description,
-                          dishes_count=get_count_dish(sub_menu_id=sub_menu.id))
+                          dishes_count=get_count_dishes(sub_menu_id=submenu_id))
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
@@ -116,12 +117,12 @@ def add_menu(menu: MenuObj):
     return MenuObj(id=menu.id,
                    title=menu.title,
                    description=menu.description,
-                   submenus_count=get_count_submenu(menu.id),
-                   dishes_count=get_count_dish(menu.id))
+                   submenus_count=get_count_submenus(menu.id),
+                   dishes_count=get_count_dishes(menu.id))
 
 
 @app.post('/api/v1/menus/{main_menu_id}/submenus/',
-          response_model=MenuObj,
+          response_model=SubmenuObj,
           status_code=201)
 def add_submenu(main_menu_id: UUID,
                 submenu: SubmenuObj):
@@ -140,10 +141,10 @@ def add_submenu(main_menu_id: UUID,
                                description=submenu.description,
                                main_menu_id=main_menu_id))
     connect.commit()
-    return MenuObj(id=submenu.id,
-                   title=submenu.title,
-                   description=submenu.description,
-                   dishes_count=get_count_dish(submenu.id))
+    return SubmenuObj(id=submenu.id,
+                      title=submenu.title,
+                      description=submenu.description,
+                      dishes_count=get_count_dishes(submenu.id))
 
 
 @app.post('/api/v1/menus/{main_menu_id}/submenus/{submenu_id}/dishes/',
@@ -189,8 +190,8 @@ def update_menu(menu: MenuObj,
         return MenuObj(id=exist_menu.id,
                        title=exist_menu.title,
                        description=exist_menu.description,
-                       submenus_count=get_count_submenu(exist_menu.id),
-                       dishes_count=get_count_dish(exist_menu.id))
+                       submenus_count=get_count_submenus(exist_menu.id),
+                       dishes_count=get_count_dishes(exist_menu.id))
 
     raise HTTPException(
         status_code=status.HTTP_409_CONFLICT,
@@ -211,7 +212,7 @@ def update_submenu(sub_menu: MenuObj,
         return SubmenuObj(id=exist_sub_menu.id,
                           title=exist_sub_menu.title,
                           description=exist_sub_menu.description,
-                          dishes_count=get_count_dish(exist_sub_menu.id))
+                          dishes_count=get_count_dishes(exist_sub_menu.id))
 
     raise HTTPException(
         status_code=status.HTTP_409_CONFLICT,
