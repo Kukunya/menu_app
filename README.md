@@ -7,7 +7,7 @@ ASGI-server uviconr is used to test the application.
 
 ## RUN APP ##
 ### WITH DOCKER ###
-Download the docker file and the environment variables file from the [docker-compose](https://github.com/Kukunya/menu_app/tree/master/docker-compose) directory to a place convenient for you.
+Download the [docker-compose](https://github.com/Kukunya/menu_app/blob/master/docker-compose/docker-compose.yaml) file and the [environment variables](https://github.com/Kukunya/menu_app/blob/master/docker-compose/env.env) file from the directory to a place convenient for you.
 
 Navigate to the folder where you downloaded the files and run the following commands:
 
