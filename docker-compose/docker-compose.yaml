@@ -1,35 +1,35 @@
 version: "3.8"
 
 services: 
-  menu_app:
-    container_name: menu_app
+    menu_app:
+        container_name: menu_app
 
-    image: kukunya94/menu_app:latest
+        image: kukunya94/menu_app:latest
 
-    entrypoint: "uvicorn menu_app.main:app --host 0.0.0.0 --port 8000"
-    env_file:
+        entrypoint: "uvicorn menu_app.main:app --host 0.0.0.0 --port 8000"
+        env_file:
       - env.env
-    ports:
-    - "8000:8000"
-    extra_hosts:
-    - "host.docker.internal:host-gateway"
-    depends_on:
+        ports:
+        - "8000:8000"
+        extra_hosts:
+        - "host.docker.internal:host-gateway"
+        depends_on:
+          postgre_sql:
+            condition: service_healthy
+    
       postgre_sql:
-        condition: service_healthy
-
-  postgre_sql:
-    container_name: postgre_sql
-    image: postgres:15.1-alpine
-    env_file:
-      - env.env
-    ports:
-      - "5432:5432"
-    volumes:
-    - ./postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U postgres -d postgres']
-      interval: 5s
-      timeout: 5s
-      retries: 5
-      start_period: 5s
-    restart: always
+        container_name: postgre_sql
+        image: postgres:15.1-alpine
+        env_file:
+          - env.env
+        ports:
+          - "5432:5432"
+        volumes:
+        - ./postgres-data:/var/lib/postgresql/data
+        healthcheck:
+          test: ['CMD-SHELL', 'pg_isready -U postgres -d postgres']
+          interval: 5s
+          timeout: 5s
+          retries: 5
+          start_period: 5s
+        restart: always
