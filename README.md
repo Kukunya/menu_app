@@ -9,15 +9,14 @@ ASGI-server uviconr is used to test the application.
 ### WITH DOCKER ###
 Download the [docker-compose](https://github.com/Kukunya/menu_app/blob/master/docker-compose/docker-compose.yaml) file and the [environment variables](https://github.com/Kukunya/menu_app/blob/master/docker-compose/env.env) file from the directory to a place convenient for you.
 
-Navigate to the folder where you downloaded the files and run the following commands:
+Navigate to the folder where you downloaded the files and run the following commands.
+1. To start the uvicorn server daemon with postgresql:
 
 >\>docker-compose up -d
 
-to start the uvicorn server daemon with postgresql
+2. To test the API of the application:
 
 >\>docker run --rm --network host kukunya94/menu_app_tests:latest
-
-to test the API of the application
 
 **Please note that if you abort the test, then subsequent tests will fail, since there is no database cleanup mechanism provided.**
 
