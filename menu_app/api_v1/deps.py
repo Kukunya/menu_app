@@ -1,9 +1,9 @@
-from menu_app.db.session import Session
+from menu_app.db.session import session
 
 
 def get_db():
     try:
-        db = Session()
+        db = session()
         yield db
     finally:
         db.close()
