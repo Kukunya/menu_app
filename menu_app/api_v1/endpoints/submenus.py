@@ -1,12 +1,12 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
-from starlette.responses import JSONResponse
-from menu_app.schemas.submenu_obj import SubmenuObj
-from menu_app.api_v1 import deps
-from menu_app.crud.submenus import submenus
-from fastapi import status
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from starlette.responses import JSONResponse
+
+from menu_app.api_v1 import deps
+from menu_app.crud.submenus import submenus
+from menu_app.schemas.submenu_obj import SubmenuObj
 
 app = APIRouter()
 

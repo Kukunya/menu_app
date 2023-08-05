@@ -1,9 +1,9 @@
 import json
+from re import compile
 from uuid import uuid4
 
-from requests import get, post, patch, delete
-from re import compile
 import pytest
+from requests import delete, get, patch, post
 
 
 def get_menus(self):

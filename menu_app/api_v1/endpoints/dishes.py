@@ -1,17 +1,19 @@
 from typing import List
-from fastapi import APIRouter, Depends, HTTPException
-from starlette.responses import JSONResponse
-from menu_app.schemas.dish_obj import DishObj
-from menu_app.api_v1 import deps
-from menu_app.crud.dishes import dishes
-from fastapi import status
 from uuid import UUID
 
+from fastapi import APIRouter, Depends, HTTPException, status
+from starlette.responses import JSONResponse
+
+from menu_app.api_v1 import deps
+from menu_app.crud.dishes import dishes
+from menu_app.schemas.dish_obj import DishObj
 
 app = APIRouter()
 
 
-@app.get('/api/v1/menus/{main_menu_id}/submenus/{submenu_id}/dishes/',
+@app.get('/api/v1/menus/{main_menu_id}/'
+         'submenus/{submenu_id}/'
+         'dishes/',
          response_model=List[DishObj])
 def get_submenus(submenu_id: UUID,
                  db=Depends(deps.get_db)):
@@ -19,7 +21,9 @@ def get_submenus(submenu_id: UUID,
     return [dish for dish in dishes.get_items(db=db, id=submenu_id)]
 
 
-@app.get('/api/v1/menus/{main_menu_id}/submenus/{submenu_id}/dishes/{dish_id}/',
+@app.get('/api/v1/menus/{main_menu_id}/'
+         'submenus/{submenu_id}/'
+         'dishes/{dish_id}/',
          response_model=DishObj)
 def get_submenu(dish_id: UUID,
                 db=Depends(deps.get_db)):
@@ -33,12 +37,13 @@ def get_submenu(dish_id: UUID,
         detail='dish not found')
 
 
-@app.post('/api/v1/menus/{main_menu_id}/submenus/{submenu_id}/dishes/',
+@app.post('/api/v1/menus/{main_menu_id}/'
+          'submenus/{submenu_id}/dishes/',
           response_model=DishObj,
           status_code=201)
 def add_submenu(data: DishObj,
                 main_menu_id: UUID,
-                submenu_id:UUID,
+                submenu_id: UUID,
                 db=Depends(deps.get_db)):
 
     if dishes.is_exist(db=db,
@@ -51,7 +56,9 @@ def add_submenu(data: DishObj,
     return dish
 
 
-@app.patch('/api/v1/menus/{main_menu_id}/submenus/{submenu_id}/dishes/{dish_id}/',
+@app.patch('/api/v1/menus/{main_menu_id}/'
+           'submenus/{submenu_id}/'
+           'dishes/{dish_id}/',
            response_model=DishObj)
 def update_submenu(data: DishObj,
                    dish_id: UUID,
@@ -66,7 +73,9 @@ def update_submenu(data: DishObj,
         detail='dish not found')
 
 
-@app.delete('/api/v1/menus/{main_menu_id}/submenus/{sub_menu_id}/dishes/{dish_id}/',
+@app.delete('/api/v1/menus/{main_menu_id}/'
+            'submenus/{sub_menu_id}/'
+            'dishes/{dish_id}/',
             response_class=JSONResponse)
 def delete_submenu(dish_id: UUID,
                    db=Depends(deps.get_db)):

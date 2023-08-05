@@ -1,8 +1,8 @@
-from sqlalchemy.orm import Session
-from menu_app.models.submenus import Submenus
 from fastapi.encoders import jsonable_encoder
-from menu_app.schemas.submenu_obj import SubmenuObj
+from sqlalchemy.orm import Session
+
 from menu_app.crud.base import CRUDBase
+from menu_app.models.submenus import Submenus
 
 
 class CRUDSubmenus(CRUDBase):
@@ -10,7 +10,8 @@ class CRUDSubmenus(CRUDBase):
 		return db.query(self.model).filter(self.model.main_menu_id == id).all()
 
 	def add(self, db: Session, data, id):
-		encode_data = jsonable_encoder(data, exclude={'submenus_count', 'dishes_count'})
+		encode_data = jsonable_encoder(data,
+		                               exclude={'submenus_count', 'dishes_count'})
 		item = self.model(**encode_data)
 		item.main_menu_id = id
 		db.add(item)

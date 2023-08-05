@@ -1,6 +1,7 @@
-from menu_app.db.base_class import Base
-from sqlalchemy import Column, VARCHAR
+from sqlalchemy import VARCHAR, Column
 from sqlalchemy.dialects.postgresql import UUID
+
+from menu_app.db.base_class import Base
 
 
 class Menus(Base):

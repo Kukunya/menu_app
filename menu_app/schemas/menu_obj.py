@@ -1,8 +1,9 @@
-from menu_app.schemas.base_obj import BaseObj
 from sqlalchemy import distinct, func
-from menu_app.models.submenus import Submenus
-from menu_app.models.dishes import Dishes
+
 from menu_app.db.session import session
+from menu_app.models.dishes import Dishes
+from menu_app.models.submenus import Submenus
+from menu_app.schemas.base_obj import BaseObj
 
 
 def get_item_counts(main_menu_id,

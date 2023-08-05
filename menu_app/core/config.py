@@ -1,6 +1,6 @@
-from pydantic import PostgresDsn
 from os import environ
 
+from pydantic import PostgresDsn
 
 POSTGRES_PORT = environ.get('POSTGRES_PORT')
 POSTGRES_HOST = environ.get('POSTGRES_HOST')

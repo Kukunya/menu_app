@@ -6,6 +6,7 @@ class CRUDBase:
 		self.model = model
 
 	def get_item(self, db: Session, id):
+
 		item = db.query(self.model).filter(self.model.id == id).first()
 		if item:
 			return item

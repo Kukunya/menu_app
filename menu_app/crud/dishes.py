@@ -1,7 +1,8 @@
-from sqlalchemy.orm import Session
-from menu_app.models.dishes import Dishes
 from fastapi.encoders import jsonable_encoder
+from sqlalchemy.orm import Session
+
 from menu_app.crud.base import CRUDBase
+from menu_app.models.dishes import Dishes
 
 
 class CRUDDishes(CRUDBase):
