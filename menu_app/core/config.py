@@ -18,8 +18,8 @@ POSTGRES_DB = environ.get('POSTGRES_DB')
 # )
 
 SQLALCHEMY_DATABASE_URI = PostgresDsn.build(
-    scheme="postgresql+psycopg2",
-    username="postgres",
-    password="admin",
-    host=f"localhost:5432",
-    path="menu_app",)
+    scheme='postgresql+psycopg2',
+    username='postgres',
+    password='admin',
+    host='localhost:5432',
+    path='menu_app',)

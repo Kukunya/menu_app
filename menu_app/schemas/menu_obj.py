@@ -18,8 +18,8 @@ def get_item_counts(main_menu_id,
 
 
 class MenuObj(BaseObj):
-    submenus_count: int = None
-    dishes_count: int = None
+    submenus_count: int | None = None
+    dishes_count: int | None = None
 
     def __init__(self, **data):
         if 'id' in data:

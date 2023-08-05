@@ -1,5 +1,3 @@
-from typing import Union
-
 from menu_app.db.session import session
 from menu_app.models.dishes import Dishes
 from menu_app.schemas.base_obj import BaseObj
@@ -14,7 +12,7 @@ def get_item_counts(submenu_id,
 
 
 class SubmenuObj(BaseObj):
-    dishes_count: Union[int, None] = None
+    dishes_count: int | None = None
 
     def __init__(self, **data):
         if 'id' in data:

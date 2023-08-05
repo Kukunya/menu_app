@@ -1,4 +1,3 @@
-from typing import List
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -12,7 +11,7 @@ app = APIRouter()
 
 
 @app.get('/api/v1/menus/{main_menu_id}/submenus/',
-         response_model=List[SubmenuObj])
+         response_model=list[SubmenuObj])
 def get_submenus(main_menu_id: UUID,
                  db=Depends(deps.get_db)):
 
@@ -79,7 +78,7 @@ def update_submenu(data: SubmenuObj,
 def delete_submenu(submenu_id: UUID,
                    db=Depends(deps.get_db)):
     if submenus.delete(db=db, id=submenu_id):
-        return {"status": True, "message": "The menu has been deleted"}
+        return {'status': True, 'message': 'The menu has been deleted'}
 
     raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                         detail='submenu not found')

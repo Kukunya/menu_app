@@ -30,7 +30,7 @@ The necessary dependencies are specified in "/requirements.txt".
 
 
 
-#### To get started, from the root of the application install dependencies: ####  
+#### To get started, from the root of the application install dependencies: ####
 >\>pip install -r requirements.txt
 
 
@@ -41,32 +41,32 @@ The necessary dependencies are specified in "/requirements.txt".
 You can set the parameters directly in the "/menu_app/conf.py" file (not recommended for security reasons)
 
 ###### 2 OPTION ######
-To create a virtual environment variable specify variable values according to your database settings.  
+To create a virtual environment variable specify variable values according to your database settings.
 
-*For windows:*  
+*For windows:*
 
->\>set sql_host=\<you host-ip>  
->\>set sql_port=\<you host-port>  
->\>set sql_user=\<you database user>  
->\>set sql_pass=\<you database password>  
+>\>set sql_host=\<you host-ip>
+>\>set sql_port=\<you host-port>
+>\>set sql_user=\<you database user>
+>\>set sql_pass=\<you database password>
 >\>set database=\<you database name>
 
 ###### 3 OPTION ######
-If multiple uses of the script are planned, then you should add variables from [2 OPTION](/#2-option) to the file "Activate.bat" and to "Deactivate.bat" file should be specified without the values of variables.  
+If multiple uses of the script are planned, then you should add variables from [2 OPTION](/#2-option) to the file "Activate.bat" and to "Deactivate.bat" file should be specified without the values of variables.
 
-*For windows:* 
-  
->\>set sql_host=  
->\>set sql_port=  
->\>set sql_user=  
->\>set sql_pass=  
+*For windows:*
+
+>\>set sql_host=
+>\>set sql_port=
+>\>set sql_user=
+>\>set sql_pass=
 >\>set database=
 
 Then restart venv.
 
 
 
-#### From the root of the application, run ASGI-server uvicorn: ####  
+#### From the root of the application, run ASGI-server uvicorn: ####
 >\>uvicorn menu_app.main:app
 
 ## API METHODS ##

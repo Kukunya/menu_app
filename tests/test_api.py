@@ -13,7 +13,7 @@ def get_menus(self):
 
 
 def get_menu_item(self):
-    response = get(self.url+self.main_menu_id)
+    response = get(self.url + self.main_menu_id)
 
     if response.status_code == 200:
         pattern = compile(f'{{"id":"{self.main_menu_id}",'
@@ -37,18 +37,18 @@ def get_menu_item(self):
 def post_menu(self):
     response = post(self.url,
                     data=json.dumps({
-                        "id": self.main_menu_id,
-                        "title": self.menu_title,
-                        "description": self.menu_description
+                        'id': self.main_menu_id,
+                        'title': self.menu_title,
+                        'description': self.menu_description
                     }))
 
     self.items_count[self.main_menu_id] = dict()
 
     pattern = compile(f'{{"id":"{self.main_menu_id}",'
-                        f'"title":"{self.menu_title}",'
-                        f'"description":"{self.menu_description}",'
-                        f'"submenus_count":{self.get_submenus_count()},'
-                        f'"dishes_count":{self.get_count_dishes_in_menu()}}}')
+                      f'"title":"{self.menu_title}",'
+                      f'"description":"{self.menu_description}",'
+                      f'"submenus_count":{self.get_submenus_count()},'
+                      f'"dishes_count":{self.get_count_dishes_in_menu()}}}')
 
     assert response.headers['content-type'] == 'application/json'
     assert response.status_code == 201
@@ -60,15 +60,15 @@ def update_menu(self):
     TestMenu.description = self.menu_updated_description
 
     response = patch(url=self.url + self.main_menu_id, data=json.dumps({
-        "title": self.menu_title,
-        "description": self.menu_description
+        'title': self.menu_title,
+        'description': self.menu_description
     }))
 
     pattern = compile(f'{{"id":"{self.main_menu_id}",'
-                        f'"title":"{self.menu_title}",'
-                        f'"description":"{self.menu_description}",'
-                        f'"submenus_count":{self.get_submenus_count()},'
-                        f'"dishes_count":{self.get_count_dishes_in_menu()}}}')
+                      f'"title":"{self.menu_title}",'
+                      f'"description":"{self.menu_description}",'
+                      f'"submenus_count":{self.get_submenus_count()},'
+                      f'"dishes_count":{self.get_count_dishes_in_menu()}}}')
 
     assert response.headers['content-type'] == 'application/json'
     assert response.status_code == 200
@@ -100,18 +100,18 @@ def get_submenus(self):
 def post_submenu(self):
     response = post(url=self.sub_menu_url,
                     data=json.dumps({
-                        "id": self.sub_menu_id,
-                        "title": self.submenu_title,
-                        "description": self.submenu_description
+                        'id': self.sub_menu_id,
+                        'title': self.submenu_title,
+                        'description': self.submenu_description
                     }))
     if response.status_code == 201:
         if self.sub_menu_id not in self.items_count[self.main_menu_id]:
             self.items_count[self.main_menu_id][self.sub_menu_id] = []
 
     pattern = compile(f'{{"id":"{self.sub_menu_id}",'
-                        f'"title":"{self.submenu_title}",'
-                        f'"description":"{self.submenu_description}",'
-                        f'"dishes_count":{self.get_count_dishes_in_submenu()}')
+                      f'"title":"{self.submenu_title}",'
+                      f'"description":"{self.submenu_description}",'
+                      f'"dishes_count":{self.get_count_dishes_in_submenu()}')
 
     assert response.headers['content-type'] == 'application/json'
     assert response.status_code == 201
@@ -148,8 +148,8 @@ def update_submenu(self):
                       f'"dishes_count":{self.get_count_dishes_in_submenu()}')
 
     response = patch(url=self.sub_menu_url + self.sub_menu_id, data=json.dumps({
-        "title": self.submenu_title,
-        "description": self.submenu_description
+        'title': self.submenu_title,
+        'description': self.submenu_description
     }))
 
     assert response.headers['content-type'] == 'application/json'
@@ -182,19 +182,18 @@ def post_dish(self):
 
     response = post(url=self.dish_url,
                     data=json.dumps({
-                        "id": self.dish_id,
-                        "title": self.dish_title,
-                        "description": self.dish_description,
-                        "price": self.price
+                        'id': self.dish_id,
+                        'title': self.dish_title,
+                        'description': self.dish_description,
+                        'price': self.price
                     }))
-
 
     self.items_count[self.main_menu_id][self.sub_menu_id].append(self.dish_id)
 
     pattern = compile(f'{{"id":"{self.dish_id}",'
-                        f'"title":"{self.dish_title}",'
-                        f'"description":"{self.dish_description}",'
-                        f'"price":"{self.price}"')
+                      f'"title":"{self.dish_title}",'
+                      f'"description":"{self.dish_description}",'
+                      f'"price":"{self.price}"')
 
     assert response.headers['content-type'] == 'application/json'
     assert response.status_code == 201
@@ -232,9 +231,9 @@ def update_dish(self):
                       f'"price":"{self.price}"')
 
     response = patch(url=self.dish_url + self.dish_id, data=json.dumps({
-        "title": self.dish_title,
-        "description": self.dish_description,
-        "price": self.price
+        'title': self.dish_title,
+        'description': self.dish_description,
+        'price': self.price
     }))
 
     assert response.headers['content-type'] == 'application/json'
