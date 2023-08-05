@@ -1,25 +1,37 @@
+from typing import List
+from fastapi import APIRouter, Depends, HTTPException
+from starlette.responses import JSONResponse
+from menu_app.schemas.submenu_obj import SubmenuObj
+from menu_app.api_v1 import deps
+from menu_app.crud.submenus import submenus
+from fastapi import status
+from uuid import UUID
+
+
+app = APIRouter()
+
+
 @app.get('/api/v1/menus/{main_menu_id}/submenus/',
          response_model=List[SubmenuObj])
-def get_submenus(main_menu_id: UUID):
-    sub_menus = connect.query(Submenus).filter(
-        Submenus.main_menu_id == main_menu_id).all()
-    return [SubmenuObj(id=sub_menu.id,
-                       title=sub_menu.title,
-                       description=sub_menu.description,
-                       dishes_count=get_count_dishes(sub_menu.id)) for sub_menu in sub_menus]
+def get_submenus(main_menu_id: UUID,
+                 db=Depends(deps.get_db)):
+
+    return [SubmenuObj(id=submenu.id,
+                       title=submenu.title,
+                       description=submenu.description)
+            for submenu in submenus.get_items(db=db, id=main_menu_id)]
 
 
 @app.get('/api/v1/menus/{main_menu_id}/submenus/{submenu_id}/',
          response_model=SubmenuObj)
-def get_submenu_item(main_menu_id: UUID,
-                     submenu_id: UUID):
-    sub_menu = connect.query(Submenus).filter(Submenus.id == submenu_id,
-                                              Submenus.main_menu_id == main_menu_id).scalar()
-    if sub_menu:
-        return SubmenuObj(id=sub_menu.id,
-                          title=sub_menu.title,
-                          description=sub_menu.description,
-                          dishes_count=get_count_dishes(sub_menu_id=submenu_id))
+def get_submenu(submenu_id: UUID,
+                db=Depends(deps.get_db)):
+
+    submenu = submenus.get_item(db=db, id=submenu_id)
+    if submenu:
+        return SubmenuObj(id=submenu.id,
+                          title=submenu.title,
+                          description=submenu.description)
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
@@ -29,46 +41,45 @@ def get_submenu_item(main_menu_id: UUID,
 @app.post('/api/v1/menus/{main_menu_id}/submenus/',
           response_model=SubmenuObj,
           status_code=201)
-def add_submenu(main_menu_id: UUID,
-                submenu: SubmenuObj):
-    if connect.query(Submenus).filter(Submenus.title == submenu.title).scalar():
+def add_submenu(data: SubmenuObj,
+                main_menu_id: UUID,
+                db=Depends(deps.get_db)):
+
+    if submenus.is_exist(db=db,
+                         title=data.title):
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail='such a item already exists')
 
-    if not connect.query(Menus).filter(Menus.id == main_menu_id).scalar():
-        raise HTTPException(
-            status_code=status.HTTP_409_CONFLICT,
-            detail='there is no parent menu')
+    submenu = submenus.add(db=db, data=data, id=main_menu_id)
+    return SubmenuObj(id=submenu.id,
+                      title=submenu.title,
+                      description=submenu.description)
 
 
 @app.patch('/api/v1/menus/{main_menu_id}/submenus/{submenu_id}/',
            response_model=SubmenuObj)
-def update_submenu(sub_menu: MenuObj,
-                   submenu_id: UUID):
-    exist_sub_menu = connect.query(Submenus).filter(
-        Submenus.id == submenu_id).scalar()
-    if exist_sub_menu:
-        exist_sub_menu.title = sub_menu.title
-        exist_sub_menu.description = sub_menu.description
-        connect.commit()
+def update_submenu(data: SubmenuObj,
+                   submenu_id: UUID,
+                   db=Depends(deps.get_db)):
 
-        return SubmenuObj(id=exist_sub_menu.id,
-                          title=exist_sub_menu.title,
-                          description=exist_sub_menu.description,
-                          dishes_count=get_count_dishes(exist_sub_menu.id))
+    submenu = submenus.update(db, data, submenu_id)
+    if submenu:
+        return SubmenuObj(id=submenu.id,
+                          title=submenu.title,
+                          description=submenu.description)
 
     raise HTTPException(
         status_code=status.HTTP_409_CONFLICT,
         detail='submenu not found')
+
 
 @app.delete('/api/v1/menus/{main_menu_id}/submenus/{submenu_id}/',
             response_class=JSONResponse)
-def delete_submenu(submenu_id: UUID):
-    if connect.query(Submenus).filter(Submenus.id == submenu_id).delete():
-        connect.commit()
+def delete_submenu(submenu_id: UUID,
+                   db=Depends(deps.get_db)):
+    if submenus.delete(db=db, id=submenu_id):
         return {"status": True, "message": "The menu has been deleted"}
 
-    raise HTTPException(
-        status_code=status.HTTP_409_CONFLICT,
-        detail='submenu not found')
+    raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                        detail='submenu not found')

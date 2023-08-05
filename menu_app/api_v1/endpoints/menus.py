@@ -14,17 +14,23 @@ app = APIRouter()
 @app.get('/api/v1/menus/',
          response_model=List[MenuObj])
 def get_menus(db=Depends(deps.get_db)):
-    return menus.get_items(db=db)
+
+    return [MenuObj(id=menu.id,
+                    title=menu.title,
+                    description=menu.description)
+            for menu in menus.get_items(db=db)]
 
 
 @app.get('/api/v1/menus/{main_menu_id}/',
          response_model=MenuObj)
-def get_menus_item(main_menu_id: UUID,
-                   db=Depends(deps.get_db)):
+def get_menu(main_menu_id: UUID,
+             db=Depends(deps.get_db)):
 
-    menu = menus.get_item(db=db, menu_id=main_menu_id)
+    menu = menus.get_item(db=db, id=main_menu_id)
     if menu:
-        return menu
+        return MenuObj(id=menu.id,
+                       title=menu.title,
+                       description=menu.description)
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
@@ -43,17 +49,21 @@ def add_menu(data: MenuObj,
             detail='such a item already exists')
 
     menu = menus.add(db=db, data=data)
-    return menu
+    return MenuObj(id=menu.id,
+                   title=menu.title,
+                   description=menu.description)
 
 
 @app.patch('/api/v1/menus/{main_menu_id}/',
            response_model=MenuObj)
-def update_menu(menu: MenuObj,
+def update_menu(data: MenuObj,
                 main_menu_id: UUID,
                 db=Depends(deps.get_db)):
-    menu = menus.update(db, menu)
+    menu = menus.update(db, data, main_menu_id)
     if menu:
-        return menu
+        return MenuObj(id=menu.id,
+                       title=menu.title,
+                       description=menu.description)
 
     raise HTTPException(
         status_code=status.HTTP_409_CONFLICT,
