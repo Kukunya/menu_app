@@ -1,18 +1,17 @@
 from sqlalchemy import DECIMAL, VARCHAR, Column, ForeignKey
-from sqlalchemy.dialects.postgresql import UUID
 
 from menu_app.db.base_class import Base
 
 
 class Dishes(Base):
     __tablename__ = 'dishes'
-    id = Column(UUID(as_uuid=True),
+    id = Column(VARCHAR,
                 primary_key=True)
     title = Column(VARCHAR,
                    unique=True)
     description = Column(VARCHAR)
     price = Column(DECIMAL)
-    main_menu_id = Column(UUID(as_uuid=True),
+    main_menu_id = Column(VARCHAR,
                           ForeignKey('menus.id', ondelete='CASCADE'))
-    sub_menu_id = Column(UUID(as_uuid=True),
+    sub_menu_id = Column(VARCHAR,
                          ForeignKey('submenus.id', ondelete='CASCADE'))
