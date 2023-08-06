@@ -7,6 +7,7 @@ POSTGRES_HOST = environ.get('POSTGRES_HOST')
 POSTGRES_USER = environ.get('POSTGRES_USER')
 POSTGRES_PASSWORD = environ.get('POSTGRES_PASSWORD')
 POSTGRES_DB = environ.get('POSTGRES_DB')
+REDIS_URI = environ.get('REDIS_URI')
 
 
 SQLALCHEMY_DATABASE_URI = PostgresDsn.build(
@@ -14,5 +15,5 @@ SQLALCHEMY_DATABASE_URI = PostgresDsn.build(
     username=environ.get('POSTGRES_USER'),
     password=environ.get('POSTGRES_PASSWORD'),
     host=f"{POSTGRES_HOST}:{POSTGRES_PORT}",
-    path=environ.get('POSTGRES_DB'),
-)
+    path=environ.get('POSTGRES_DB'))
+
