@@ -1,11 +1,19 @@
+from os import environ
 from uuid import uuid4
 
 import pytest
+from sqlalchemy import create_engine
+
+from menu_app.core.config import SQLALCHEMY_DATABASE_URI
+
+APP_HOST = environ.get('REDIS_URI')
+
+TEST_ENGINE = create_engine(SQLALCHEMY_DATABASE_URI.unicode_string())
 
 
 @pytest.fixture(scope='class', autouse=True)
 def set_test_menu_variables(request):
-    request.cls.url = 'http://localhost:8000/api/v1/menus/'
+    request.cls.url = f'http://{APP_HOST}:8000/api/v1/menus/'
     request.cls.main_menu_id = str(uuid4())
     request.cls.menu_title = 'My menu 1'
     request.cls.menu_description = 'My menu description 1'

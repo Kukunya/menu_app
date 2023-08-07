@@ -1,19 +1,22 @@
-import json
 from re import compile
 from uuid import uuid4
 
 import pytest
-from requests import delete, get, patch, post
+from fastapi.testclient import TestClient
+
+from menu_app.main import app
+
+client = TestClient(app)
 
 
 def get_menus(self):
-    response = get(f'{self.url}')
+    response = client.get(f'{self.url}')
     assert response.status_code == 200
     assert response.text[0] == '[' and response.text[-1] == ']'
 
 
 def get_menu_item(self):
-    response = get(self.url + self.main_menu_id)
+    response = client.get(self.url + self.main_menu_id)
 
     if response.status_code == 200:
         pattern = compile(f'{{"id":"{self.main_menu_id}",'
@@ -35,12 +38,12 @@ def get_menu_item(self):
 
 
 def post_menu(self):
-    response = post(self.url,
-                    data=json.dumps({
-                        'id': self.main_menu_id,
-                        'title': self.menu_title,
-                        'description': self.menu_description
-                    }))
+    response = client.post(self.url,
+                           json={
+                               'id': self.main_menu_id,
+                               'title': self.menu_title,
+                               'description': self.menu_description
+                           })
 
     self.items_count[self.main_menu_id] = dict()
 
@@ -59,10 +62,11 @@ def update_menu(self):
     TestMenu.title = self.menu_updated_title
     TestMenu.description = self.menu_updated_description
 
-    response = patch(url=self.url + self.main_menu_id, data=json.dumps({
-        'title': self.menu_title,
-        'description': self.menu_description
-    }))
+    response = client.patch(url=self.url + self.main_menu_id,
+                            json={
+                                'title': self.menu_title,
+                                'description': self.menu_description
+                            })
 
     pattern = compile(f'{{"id":"{self.main_menu_id}",'
                       f'"title":"{self.menu_title}",'
@@ -79,7 +83,7 @@ def delete_menu(self):
     pattern = compile('{"status":true,'
                       '"message":"The menu has been deleted"}')
 
-    response = delete(url=self.url + self.main_menu_id)
+    response = client.delete(url=self.url + self.main_menu_id)
 
     if response.status_code == 200:
         self.items_count.pop(self.main_menu_id)
@@ -92,21 +96,23 @@ def delete_menu(self):
 # SUBMENUS TESTS ###############################################################
 
 def get_submenus(self):
-    response = get(url=self.sub_menu_url)
+    response = client.get(url=self.sub_menu_url)
     assert response.status_code == 200
     assert response.text[0] == '[' and response.text[-1] == ']'
 
 
 def post_submenu(self):
-    response = post(url=self.sub_menu_url,
-                    data=json.dumps({
-                        'id': self.sub_menu_id,
-                        'title': self.submenu_title,
-                        'description': self.submenu_description
-                    }))
+    response = client.post(url=self.sub_menu_url,
+                           json={
+                               'id': self.sub_menu_id,
+                               'title': self.submenu_title,
+                               'description': self.submenu_description
+                           })
+
     if response.status_code == 201:
         if self.sub_menu_id not in self.items_count[self.main_menu_id]:
             self.items_count[self.main_menu_id][self.sub_menu_id] = []
+    print(response.text)
 
     pattern = compile(f'{{"id":"{self.sub_menu_id}",'
                       f'"title":"{self.submenu_title}",'
@@ -119,7 +125,7 @@ def post_submenu(self):
 
 
 def get_submenu_item(self):
-    response = get(self.sub_menu_url + self.sub_menu_id)
+    response = client.get(self.sub_menu_url + self.sub_menu_id)
 
     if response.status_code == 200:
         pattern = compile(f'{{"id":"{self.sub_menu_id}",'
@@ -147,10 +153,11 @@ def update_submenu(self):
                       f'"description":"{self.submenu_description}",'
                       f'"dishes_count":{self.get_count_dishes_in_submenu()}')
 
-    response = patch(url=self.sub_menu_url + self.sub_menu_id, data=json.dumps({
-        'title': self.submenu_title,
-        'description': self.submenu_description
-    }))
+    response = client.patch(url=self.sub_menu_url + self.sub_menu_id,
+                            json={
+                                'title': self.submenu_title,
+                                'description': self.submenu_description
+                            })
 
     assert response.headers['content-type'] == 'application/json'
     assert response.status_code == 200
@@ -161,7 +168,7 @@ def delete_submenu(self):
     pattern = compile('{"status":true,'
                       '"message":"The menu has been deleted"}')
 
-    response = delete(url=self.sub_menu_url + self.sub_menu_id)
+    response = client.delete(url=self.sub_menu_url + self.sub_menu_id)
     if response.status_code == 200:
         self.items_count[self.main_menu_id].pop(self.sub_menu_id)
 
@@ -173,20 +180,20 @@ def delete_submenu(self):
 
 
 def get_dishes(self):
-    response = get(url=self.dish_url)
+    response = client.get(url=self.dish_url)
     assert response.status_code == 200
     assert response.text[0] == '[' and response.text[-1] == ']'
 
 
 def post_dish(self):
 
-    response = post(url=self.dish_url,
-                    data=json.dumps({
-                        'id': self.dish_id,
-                        'title': self.dish_title,
-                        'description': self.dish_description,
-                        'price': self.price
-                    }))
+    response = client.post(url=self.dish_url,
+                           json={
+                               'id': self.dish_id,
+                               'title': self.dish_title,
+                               'description': self.dish_description,
+                               'price': self.price
+                           })
 
     self.items_count[self.main_menu_id][self.sub_menu_id].append(self.dish_id)
 
@@ -201,7 +208,7 @@ def post_dish(self):
 
 
 def get_dish_item(self):
-    response = get(self.dish_url + self.dish_id)
+    response = client.get(self.dish_url + self.dish_id)
 
     if response.status_code == 200:
         pattern = compile(f'{{"id":"{self.dish_id}",'
@@ -230,11 +237,11 @@ def update_dish(self):
                       f'"description":"{self.dish_description}",'
                       f'"price":"{self.price}"')
 
-    response = patch(url=self.dish_url + self.dish_id, data=json.dumps({
+    response = client.patch(url=self.dish_url + self.dish_id, json={
         'title': self.dish_title,
         'description': self.dish_description,
         'price': self.price
-    }))
+    })
 
     assert response.headers['content-type'] == 'application/json'
     assert response.status_code == 200
@@ -245,7 +252,7 @@ def delete_dish(self):
     pattern = compile('{"status":true,'
                       '"message":"The menu has been deleted"}')
 
-    response = delete(url=self.dish_url + self.dish_id)
+    response = client.delete(url=self.dish_url + self.dish_id)
     if response.status_code == 200:
         self.items_count[self.main_menu_id][self.sub_menu_id].remove(self.dish_id)
 
