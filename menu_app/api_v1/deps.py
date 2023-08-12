@@ -1,9 +1,13 @@
-from menu_app.db.session import session
+from menu_app.db.session import SessionLocal
+from menu_app.models.dishes import Dishes  # noqa
+from menu_app.models.menus import Menus  # noqa
+from menu_app.models.submenus import Submenus  # noqa
 
 
-def get_db():
+async def get_db():
+
+    db = SessionLocal()
     try:
-        db = session()
         yield db
     finally:
-        db.close()
+        await db.close()

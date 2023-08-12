@@ -1,74 +1,45 @@
-from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
+from sqlalchemy import distinct, func, select
+from sqlalchemy.ext.asyncio import AsyncSession
 
-from menu_app.cache.crud.cache_menus import CacheMenu, menu_cache
+from menu_app.cache.crud.cache_menus import menu_cache
 from menu_app.crud.base import CRUDBase
+from menu_app.models.dishes import Dishes
 from menu_app.models.menus import Menus
-from menu_app.schemas.base_obj import BaseObj
+from menu_app.models.submenus import Submenus
 from menu_app.schemas.menu_obj import MenuObj
 
 
 class CRUDMenus(CRUDBase):
-    def get_item(self,
-                 db: Session,
-                 id: str) -> MenuObj | None:
 
-        item = CacheMenu.get_item(id)
-        if not item:
-            item = db.query(self.model).filter(
-                self.model.id == id).first()
+    async def get_items(self,
+                        db: AsyncSession)\
+            -> list[MenuObj]:
 
-            if item:
-                item = MenuObj(id=id,
-                               title=item.title,
-                               description=item.description)
-                menu_cache.add_item(data=item, id=item.id)
+        items = await db.execute(select(self.model))
 
-            else:
-                return None
-        return item
+        return [await self.pre_calculate(db=db,
+                                         menu=menu)
+                for menu in items.scalars()]
 
-    def get_items(self, db: Session) -> list[MenuObj]:
+    @staticmethod
+    async def pre_calculate(db: AsyncSession,
+                            menu: Menus):
 
-        return [MenuObj(id=menu.id,
-                        title=menu.title,
-                        description=menu.description)
-                for menu in db.query(self.model).all()]
+        async def get_item_counts(id):
+            query = select(
+                func.count(distinct(Submenus.title)),
+                func.count(distinct(Dishes.title))).join(
+                Dishes, isouter=True).filter(
+                Submenus.main_menu_id == id,
+                Dishes.main_menu_id == id)
+            items_count_in = await db.execute(query)
 
-    def add(self, db: Session,
-            data: BaseObj) -> MenuObj:
-        encode_data = jsonable_encoder(data)
-        item = self.model(**encode_data)
-        db.add(item)
-        db.commit()
+            return items_count_in.fetchone()
+        menu = MenuObj.model_validate(menu)
+        menu.submenus_count, menu.dishes_count = await get_item_counts(menu.id)
 
-        return MenuObj(**encode_data)
-
-    def update(self, db: Session,
-               data: BaseObj,
-               id: str) -> MenuObj | None:
-
-        menu = db.query(self.model).filter(self.model.id == id).first()
-        if menu:
-            menu.title = data.title
-            menu.description = data.description
-            db.commit()
-            data = data.model_dump(exclude='id')
-            CacheMenu.update_item(id=id, data=data)
-
-            return MenuObj(id=id, **data)
-
-        return None
-
-    def delete(self, id: str,
-               db: Session) -> bool:
-
-        if db.query(self.model).filter(self.model.id == id).delete():
-            menu_cache.delete_item(id)
-            db.commit()
-
-            return True
-        return False
+        return menu
 
 
-menus = CRUDMenus(Menus)
+menus = CRUDMenus(model=Menus,
+                  cache=menu_cache)
